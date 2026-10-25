@@ -105,6 +105,25 @@ def step_impl(context, element_name):
 ##################################################################
 
 ## UPDATE CODE HERE ##
+@when('I press the "{button}" button')
+def step_impl(context, button):
+    """ Press a button on the page """
+    button_id = button.lower() + "-btn"
+    element = WebDriverWait(context.driver, context.wait_seconds).until(
+        expected_conditions.element_to_be_clickable((By.ID, button_id))
+    )
+    element.click()
+
+
+@then('I should see the message "{message}"')
+def step_impl(context, message):
+    """ Check for a message displayed by the application """
+    element = WebDriverWait(context.driver, context.wait_seconds).until(
+        expected_conditions.text_to_be_present_in_element(
+            (By.ID, "flash_message"),
+            message
+        )
+    )
 
 ##################################################################
 # This code works because of the following naming convention:
@@ -132,3 +151,27 @@ def step_impl(context, element_name, text_string):
     )
     element.clear()
     element.send_keys(text_string)
+@then('I should see "{text_string}" in the search results')
+def step_impl(context, text_string):
+    """Check that a product appears in the search results."""
+    results = WebDriverWait(
+        context.driver, context.wait_seconds
+    ).until(
+        expected_conditions.presence_of_element_located(
+            (By.ID, "search_results")
+        )
+    )
+    assert text_string in results.text
+
+
+@then('I should not see "{text_string}" in the search results')
+def step_impl(context, text_string):
+    """Check that a product does not appear in the search results."""
+    results = WebDriverWait(
+        context.driver, context.wait_seconds
+    ).until(
+        expected_conditions.presence_of_element_located(
+            (By.ID, "search_results")
+        )
+    )
+    assert text_string not in results.text
